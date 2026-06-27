@@ -302,6 +302,8 @@ export default function Saved({ refreshKey, onModify }) {
         title="Quotation Preview"
         onClose={() => setViewQuote(null)}
         wide
+        overlayClassName="modal-overlay"
+        className="modal-content"
         footer={
           <>
             <button className="btn btn-ghost" onClick={() => setViewQuote(null)}>Close</button>

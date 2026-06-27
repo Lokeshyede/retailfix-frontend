@@ -908,7 +908,7 @@ export default function Builder({ onQuoteSaved, editQuote, clearEditQuote }) {
           </div>
 
           {/* Bottom Sticky Action Bar (Unified toggle and generate buttons) */}
-          <div className="rf-drawer-action-area">
+          <div className={`rf-drawer-action-area bottom-action-bar ${previewOpen ? "preview-open" : ""}`}>
             <button 
               className="btn btn-ghost rf-mobile-cart-toggle" 
               onClick={() => setMobileTab(mobileTab === 'cart' ? 'picker' : 'cart')}
@@ -933,6 +933,8 @@ export default function Builder({ onQuoteSaved, editQuote, clearEditQuote }) {
         title="Quotation Preview"
         onClose={() => setPreviewOpen(false)}
         wide
+        overlayClassName="modal-overlay"
+        className="modal-content"
         footer={
           <>
             <button className="btn btn-ghost" onClick={() => setPreviewOpen(false)} type="button">Close</button>
