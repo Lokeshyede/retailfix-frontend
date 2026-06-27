@@ -299,22 +299,140 @@ textarea{resize:vertical;min-height:3.75rem;}
 .quote-sn-badge{font-family:'JetBrains Mono';font-size:clamp(0.625rem,2.5vw,0.75rem);color:var(--safety-dark);font-weight:700;background:var(--safety-light);padding:0.25rem 0.5rem;border-radius:4px;white-space:nowrap;}
 
 /* ============================================================
-   PRINT
+   PRINT & PDF LAYOUT
    ============================================================ */
 
 @media print{
   *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;}
-  html,body{background:#fff !important;color:#000 !important;font-size:11pt;overflow:visible !important;}
+  html,body{background:#fff !important;color:#000 !important;font-size:11pt;overflow:visible !important;width:210mm !important;height:297mm !important;}
   body *{visibility:hidden;}
   .print-sheet,.print-sheet *{visibility:visible;}
-  .print-sheet{display:block !important;position:absolute;top:0;left:0;width:100%;height:auto !important;overflow:visible !important;}
+  .print-sheet{display:block !important;position:absolute;top:0;left:0;width:210mm !important;height:auto !important;overflow:visible !important;box-sizing:border-box;padding:10mm;}
   main{padding:0 !important;margin:0 !important;max-width:100% !important;display:block !important;}
-  .invoice-paper{max-width:100% !important;box-shadow:none !important;border:none !important;padding:0 !important;margin:0 !important;}
-  .inv-table tr{page-break-inside:avoid;}
-  .inv-footer{page-break-inside:avoid;}
+  .invoice-paper{width:190mm !important;max-width:190mm !important;box-shadow:none !important;border:none !important;padding:0 !important;margin:0 !important;page-break-after:avoid;break-after:avoid-page;}
+  .inv-table tr,
+  .inv-table td,
+  .inv-table th,
+  .inv-totals,
+  .inv-footer,
+  .inv-footer > div {
+    page-break-inside:avoid;
+    break-inside:avoid;
+  }
   .topbar,.builder-sticky-bottom,.rf-cart-drawer{display:none !important;}
-  @page{margin:12mm;}
+  @page{size:A4;margin:10mm;}
 }
+
+/* Specific styling for programmatic html2pdf generation */
+.invoice-paper.pdf-mode {
+  width: 210mm !important;
+  max-width: 210mm !important;
+  min-height: 297mm !important;
+  box-sizing: border-box !important;
+  padding: 10mm 15mm !important;
+  background: #ffffff !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  page-break-after: avoid !important;
+  break-after: avoid-page !important;
+}
+
+/* Force PDF/A4 layout style on the page */
+.invoice-paper.pdf-mode .inv-head {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  flex-wrap: nowrap !important;
+}
+
+.invoice-paper.pdf-mode .inv-doc-title {
+  text-align: right !important;
+}
+
+.invoice-paper.pdf-mode .inv-parties {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 1.25rem !important;
+  margin-bottom: 1.25rem !important;
+}
+
+.invoice-paper.pdf-mode .inv-footer {
+  display: grid !important;
+  grid-template-columns: 1.3fr 1fr !important;
+  gap: 1.25rem !important;
+  border-top: 1px solid #ddd !important;
+  padding-top: 1rem !important;
+}
+
+/* Fixed font sizing to avoid vw clamp scaling on mobile */
+.invoice-paper.pdf-mode .inv-logo-box {
+  width: 2.5rem !important;
+  height: 2.5rem !important;
+  font-size: 1.1875rem !important;
+}
+
+.invoice-paper.pdf-mode .inv-co-name {
+  font-size: 1.1875rem !important;
+}
+
+.invoice-paper.pdf-mode .inv-co-sub {
+  font-size: 0.6875rem !important;
+}
+
+.invoice-paper.pdf-mode .inv-doc-title h2 {
+  font-size: 1.375rem !important;
+}
+
+.invoice-paper.pdf-mode .inv-doc-title .qnum {
+  font-size: 0.75rem !important;
+}
+
+.invoice-paper.pdf-mode .inv-parties,
+.invoice-paper.pdf-mode .inv-table td,
+.invoice-paper.pdf-mode .inv-totals table {
+  font-size: 0.78125rem !important;
+}
+
+.invoice-paper.pdf-mode .inv-parties .label {
+  font-size: 0.625rem !important;
+}
+
+.invoice-paper.pdf-mode .inv-table th {
+  font-size: 0.6875rem !important;
+  padding: 0.5625rem 0.625rem !important;
+}
+
+.invoice-paper.pdf-mode .inv-table td {
+  padding: 0.5625rem 0.625rem !important;
+}
+
+.invoice-paper.pdf-mode .inv-totals tr.grand td {
+  font-size: 0.9375rem !important;
+}
+
+.invoice-paper.pdf-mode .inv-footer {
+  font-size: 0.71875rem !important;
+}
+
+.invoice-paper.pdf-mode .inv-footer h4 {
+  font-size: 0.6875rem !important;
+}
+
+/* Prevent breaks inside table, totals, terms and footer columns */
+.invoice-paper.pdf-mode table,
+.invoice-paper.pdf-mode tr,
+.invoice-paper.pdf-mode td,
+.invoice-paper.pdf-mode th,
+.invoice-paper.pdf-mode .inv-totals,
+.invoice-paper.pdf-mode .inv-footer,
+.invoice-paper.pdf-mode .inv-footer > div {
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
+}
+
 
 /* ============================================================
    RESPONSIVE BREAKPOINTS — MOBILE FIRST

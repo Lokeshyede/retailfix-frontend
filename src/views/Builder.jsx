@@ -3,6 +3,8 @@ import Modal from '../components/Modal';
 import { useToast } from '../components/Toast';
 import { getProducts, getCustomers, saveQuotation, createCustomer, getNextQuotationNumber } from '../api';
 import Invoice from './Invoice';
+import html2pdf from 'html2pdf.js';
+
 
 function money(n) {
   return '₹' + Number(n).toLocaleString('en-IN', { maximumFractionDigits: 2 });
@@ -464,6 +466,33 @@ export default function Builder({ onQuoteSaved, editQuote, clearEditQuote }) {
       showToast('Failed to save quotation', 'err');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleDownloadPDF = async () => {
+    await handleSave();
+    const element = document.getElementById('invoice-render');
+    if (!element) return;
+
+    element.classList.add('pdf-mode');
+
+    const opt = {
+      margin: 8,
+      filename: `quotation_${currentQuote?.quote_number || 'draft'}.pdf`,
+      image: { type: 'jpeg', quality: 1 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    try {
+      showToast('Generating PDF...');
+      await html2pdf().set(opt).from(element).save();
+      showToast('PDF downloaded successfully!', 'ok');
+    } catch (err) {
+      console.error(err);
+      showToast('Failed to generate PDF', 'err');
+    } finally {
+      element.classList.remove('pdf-mode');
     }
   };
 
@@ -938,7 +967,7 @@ export default function Builder({ onQuoteSaved, editQuote, clearEditQuote }) {
         footer={
           <>
             <button className="btn btn-ghost" onClick={() => setPreviewOpen(false)} type="button">Close</button>
-            <button className="btn btn-dark" onClick={() => { showToast('Opening print dialog — choose "Save as PDF"'); handlePrint(); }} type="button">
+            <button className="btn btn-dark" onClick={handleDownloadPDF} type="button">
               ⬇ Download PDF
             </button>
             <button className="btn btn-primary" onClick={handlePrint} type="button">🖨 Print</button>

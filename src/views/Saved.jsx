@@ -3,6 +3,8 @@ import Modal from '../components/Modal';
 import { useToast } from '../components/Toast';
 import { getQuotations, deleteQuotation } from '../api';
 import Invoice from './Invoice';
+import html2pdf from 'html2pdf.js';
+
 
 const DEFAULT_COMPANY = {
   name: 'RetailFix',
@@ -62,6 +64,32 @@ export default function Saved({ refreshKey, onModify }) {
       await load();
     } catch {
       showToast('Delete failed', 'err');
+    }
+  };
+
+  const handleDownloadPDF = async () => {
+    const element = document.getElementById('invoice-render-saved');
+    if (!element) return;
+
+    element.classList.add('pdf-mode');
+
+    const opt = {
+      margin: 8,
+      filename: `quotation_${viewQuote?.quote_number || 'saved'}.pdf`,
+      image: { type: 'jpeg', quality: 1 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    try {
+      showToast('Generating PDF...');
+      await html2pdf().set(opt).from(element).save();
+      showToast('PDF downloaded successfully!', 'ok');
+    } catch (err) {
+      console.error(err);
+      showToast('Failed to generate PDF', 'err');
+    } finally {
+      element.classList.remove('pdf-mode');
     }
   };
 
@@ -307,7 +335,7 @@ export default function Saved({ refreshKey, onModify }) {
         footer={
           <>
             <button className="btn btn-ghost" onClick={() => setViewQuote(null)}>Close</button>
-            <button className="btn btn-dark" onClick={() => { showToast('Opening print dialog — choose "Save as PDF"'); handlePrint(); }}>⬇ Download PDF</button>
+            <button className="btn btn-dark" onClick={handleDownloadPDF}>⬇ Download PDF</button>
             <button className="btn btn-primary" onClick={handlePrint}>🖨 Print</button>
           </>
         }
