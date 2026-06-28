@@ -325,11 +325,11 @@ textarea{resize:vertical;min-height:3.75rem;}
 
 /* Specific styling for programmatic html2pdf generation */
 .invoice-paper.pdf-mode {
-  width: 210mm !important;
-  max-width: 210mm !important;
-  min-height: 297mm !important;
+  width: 794px !important;
+  max-width: 794px !important;
+  min-height: 1123px !important;
   box-sizing: border-box !important;
-  padding: 10mm 15mm !important;
+  padding: 40px 50px !important;
   background: #ffffff !important;
   margin: 0 auto !important;
   display: flex !important;

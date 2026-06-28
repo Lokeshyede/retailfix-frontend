@@ -477,16 +477,42 @@ export default function Builder({ onQuoteSaved, editQuote, clearEditQuote }) {
     element.classList.add('pdf-mode');
 
     const opt = {
-      margin: 8,
+      margin: 0,
       filename: `quotation_${currentQuote?.quote_number || 'draft'}.pdf`,
       image: { type: 'jpeg', quality: 1 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        scrollX: 0,
+        scrollY: 0
+      },
+      jsPDF: {
+        unit: 'px',
+        format: [794, 1123],
+        orientation: 'portrait'
+      },
+      pagebreak: {
+        mode: ['avoid-all']
+      }
     };
 
     try {
       showToast('Generating PDF...');
-      await html2pdf().set(opt).from(element).save();
+      const pdf = await html2pdf()
+        .from(element)
+        .set(opt)
+        .toPdf()
+        .get('pdf');
+
+      const total = pdf.internal.getNumberOfPages();
+      if (total > 1) {
+        const last = pdf.internal.pages[total];
+        if (!last || last.length === 1) {
+          pdf.deletePage(total);
+        }
+      }
+
+      pdf.save(`quotation_${currentQuote?.quote_number || 'draft'}.pdf`);
       showToast('PDF downloaded successfully!', 'ok');
     } catch (err) {
       console.error(err);
