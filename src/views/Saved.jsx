@@ -89,7 +89,7 @@ export default function Saved({ refreshKey, onModify }) {
         orientation: 'portrait'
       },
       pagebreak: {
-        mode: ['avoid-all']
+        mode: ['css', 'legacy']
       }
     };
 

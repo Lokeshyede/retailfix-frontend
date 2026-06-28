@@ -492,7 +492,7 @@ export default function Builder({ onQuoteSaved, editQuote, clearEditQuote }) {
         orientation: 'portrait'
       },
       pagebreak: {
-        mode: ['avoid-all']
+        mode: ['css', 'legacy']
       }
     };
 
