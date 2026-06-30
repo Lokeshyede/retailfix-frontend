@@ -290,34 +290,215 @@ textarea{resize:vertical;min-height:3.75rem;}
    ============================================================ */
 
 .print-sheet{display:none;}
-.invoice-paper{width:100%;max-width:780px;margin:0 auto;background:#ffffff;color:#1f1f1f;font-family:'Archivo',sans-serif;box-sizing:border-box;}
-.inv-head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid var(--primary);padding-bottom:1rem;margin-bottom:1.125rem;flex-wrap:wrap;gap:0.75rem;flex-direction:column;}
-.inv-logo-mark{display:flex;align-items:center;gap:0.625rem;}
-.inv-logo-img{height:clamp(3.5rem,10vw,4.5rem);width:auto;object-fit:contain;display:block;}
-.inv-co-name{font-family:'Archivo Black';font-size:clamp(0.9375rem,3.5vw,1.1875rem);color:var(--text);}
-.inv-co-sub{font-size:clamp(0.625rem,2.5vw,0.6875rem);color:#555;margin-top:2px;}
-.inv-doc-title{text-align:left;}
-.inv-doc-title h2{font-family:'Archivo Black';font-size:clamp(1.0625rem,4vw,1.375rem);margin:0;letter-spacing:1px;color:var(--primary);}
-.inv-doc-title .qnum{font-family:'JetBrains Mono';font-size:clamp(0.65625rem,2.5vw,0.75rem);color:var(--hover);font-weight:700;}
-.inv-parties{display:grid;grid-template-columns:1fr;gap:clamp(0.75rem,3vw,1.25rem);margin-bottom:1.25rem;font-size:clamp(0.6875rem,2.8vw,0.78125rem);}
-.inv-parties .label{font-size:clamp(0.5625rem,2.2vw,0.625rem);text-transform:uppercase;letter-spacing:.5px;color:var(--primary);font-weight:700;margin-bottom:4px;}
-.inv-table-wrap{overflow-x:auto;width:100%;-webkit-overflow-scrolling:touch;}
-.inv-table{width:100%;border-collapse:collapse;margin-bottom:1rem;min-width:30rem;}
-.inv-table th{background:var(--primary);color:#ffffff;font-size:clamp(0.59375rem,2.4vw,0.6875rem);text-transform:uppercase;letter-spacing:.4px;padding:clamp(0.4375rem,2vw,0.5625rem) clamp(0.5rem,2vw,0.625rem);text-align:left;white-space:nowrap;}
-.inv-table th.r,.inv-table td.r{text-align:right;}
-.inv-table td{padding:clamp(0.4375rem,2vw,0.5625rem) clamp(0.5rem,2vw,0.625rem);font-size:clamp(0.6875rem,2.8vw,0.78125rem);border-bottom:1px solid var(--border);}
-.inv-table tr:nth-child(even) td{background:#fafafc;}
-.inv-totals{display:flex;justify-content:flex-end;margin-bottom:1.375rem;overflow-x:auto;}
-.inv-totals table{font-size:clamp(0.6875rem,2.8vw,0.78125rem);min-width:10rem;}
-.inv-totals td{padding:4px 0.5rem;}
-.inv-totals td.r{text-align:right;font-family:'JetBrains Mono';}
-.inv-totals tr.grand td{font-weight:800;font-size:clamp(0.8125rem,3.2vw,0.9375rem);border-top:2px solid var(--primary);padding-top:0.5rem;color:var(--primary);}
-.inv-footer{display:grid;grid-template-columns:1fr;gap:clamp(0.75rem,3vw,1.25rem);border-top:1px solid var(--border);padding-top:1rem;font-size:clamp(0.65625rem,2.6vw,0.71875rem);color:#555;}
-.inv-footer h4{font-size:clamp(0.59375rem,2.4vw,0.6875rem);text-transform:uppercase;letter-spacing:.4px;color:var(--primary);margin:0 0 6px;}
-.inv-footer ul{margin:0;padding-left:1rem;}
-.inv-footer li{margin-bottom:3px;}
-.inv-sign{margin-top:1.875rem;text-align:right;font-size:0.75rem;}
-.inv-sign .line{margin-top:2.25rem;border-top:1px solid #ccc;width:min(11.25rem,100%);margin-left:auto;padding-top:5px;color:#777;font-size:0.65625rem;}
+.invoice-paper{position:relative !important;width:100%;max-width:780px;margin:0 auto;background:#ffffff;color:#1f1f1f;font-family:'Archivo',sans-serif;box-sizing:border-box;}
+.inv-stamp{display:block;position:absolute;bottom:20px;right:20px;width:100px;height:auto;z-index:1000;pointer-events:none;opacity:1;}
+/* Header styling */
+.inv-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 0.75rem;
+}
+.inv-header-left {
+  flex: 1;
+}
+.inv-header-right {
+  text-align: right;
+  font-size: clamp(0.6875rem, 2.8vw, 0.78125rem);
+  line-height: 1.5;
+  color: #1f1f1f;
+}
+.inv-title {
+  color: var(--primary);
+  font-family: 'Archivo Black', sans-serif;
+  font-size: clamp(1.25rem, 5vw, 1.75rem);
+  margin: 0 0 4px 0;
+  letter-spacing: 0.5px;
+  line-height: 1.1;
+}
+.inv-meta-item {
+  margin-bottom: 2px;
+}
+.inv-header-divider {
+  border-bottom: 2px solid var(--primary);
+  margin-bottom: 1.25rem;
+}
+
+/* Customer details layout */
+.inv-details-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(1rem, 4vw, 2rem);
+  margin-bottom: 1.25rem;
+  font-size: clamp(0.6875rem, 2.8vw, 0.78125rem);
+  color: #1f1f1f;
+  line-height: 1.4;
+}
+.inv-details-col {
+  display: flex;
+  flex-direction: column;
+}
+.inv-details-title {
+  color: #888888;
+  font-weight: 700;
+  font-size: clamp(0.59375rem, 2.4vw, 0.6875rem);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.inv-details-name {
+  font-weight: 700;
+  font-size: clamp(0.78125rem, 3.2vw, 0.875rem);
+  margin-bottom: 2px;
+}
+.inv-gstin-line {
+  font-weight: 700;
+  color: #1f1f1f;
+  margin-top: 2px;
+}
+
+/* Table wrapper & table new styles */
+.inv-table-container {
+  overflow-x: auto;
+  width: 100%;
+  margin-bottom: 1.25rem;
+  -webkit-overflow-scrolling: touch;
+}
+.inv-table-new {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(0.6875rem, 2.8vw, 0.75rem);
+  min-width: 35rem;
+}
+.inv-table-new th {
+  background: var(--primary) !important;
+  color: #ffffff !important;
+  font-weight: 700;
+  padding: 8px 10px;
+  border: 1px solid var(--primary);
+  text-transform: uppercase;
+  font-size: clamp(0.625rem, 2.5vw, 0.6875rem);
+  letter-spacing: 0.5px;
+}
+.inv-table-new td {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  background: #ffffff;
+  color: #1f1f1f;
+}
+.inv-item-name {
+  font-weight: 600;
+}
+
+/* Bottom area (terms and summary) */
+.inv-bottom-row {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: clamp(1rem, 4vw, 2rem);
+  margin-top: 1rem;
+}
+.inv-bottom-left {
+  display: flex;
+  flex-direction: column;
+}
+.inv-bottom-title {
+  color: var(--primary);
+  font-weight: bold;
+  font-size: clamp(0.6875rem, 2.8vw, 0.75rem);
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+}
+.inv-terms-bullets {
+  padding-left: 12px;
+  margin: 0 0 16px 0;
+  font-size: clamp(0.625rem, 2.5vw, 0.6875rem);
+  line-height: 1.4;
+  color: #333333;
+}
+.inv-terms-bullets li {
+  margin-bottom: 3px;
+}
+.inv-bank-details {
+  font-size: clamp(0.625rem, 2.5vw, 0.6875rem);
+  line-height: 1.5;
+  color: #1f1f1f;
+}
+.inv-bank-details div {
+  margin-bottom: 2px;
+}
+.inv-bank-details-empty {
+  font-size: clamp(0.625rem, 2.5vw, 0.6875rem);
+  color: #777777;
+  font-style: italic;
+}
+.inv-summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(0.6875rem, 2.8vw, 0.75rem);
+}
+.inv-summary-table td {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  color: #1f1f1f;
+}
+.inv-summary-table td.r {
+  text-align: right;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: bold;
+}
+.inv-summary-table .grand-total-row td {
+  background: var(--primary) !important;
+  color: #ffffff !important;
+  font-weight: 800;
+  font-size: clamp(0.78125rem, 3.2vw, 0.875rem);
+  border: 1px solid var(--primary);
+}
+
+/* Signatures layout */
+.inv-signatures-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2.25rem;
+  padding-left: 10px;
+  padding-right: 120px;
+}
+.inv-signature-col {
+  width: 180px;
+  text-align: center;
+}
+.inv-signature-line {
+  border-top: 1px solid #CCCCCC;
+  margin-bottom: 6px;
+}
+.inv-signature-label {
+  font-size: clamp(0.625rem, 2.5vw, 0.6875rem);
+  font-weight: bold;
+  color: #1f1f1f;
+}
+.inv-signature-sub {
+  font-size: clamp(0.5625rem, 2.2vw, 0.625rem);
+  color: #555555;
+  margin-top: 1px;
+}
+
+/* Footer divider & info style */
+.inv-footer-divider {
+  border-top: 1px solid var(--border);
+  margin-top: 1.5rem;
+  margin-bottom: 8px;
+}
+.inv-footer-info {
+  text-align: center;
+  font-size: clamp(0.625rem, 2.5vw, 0.6875rem);
+  color: #555555;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  align-items: center;
+}
+.inv-footer-sep {
+  color: #CCCCCC;
+}
 
 /* ============================================================
    TOAST / SPINNER / BADGE
@@ -374,84 +555,122 @@ textarea{resize:vertical;min-height:3.75rem;}
 }
 
 /* Force PDF/A4 layout style on the page */
-.invoice-paper.pdf-mode .inv-head {
+.invoice-paper.pdf-mode .inv-header-row {
   display: flex !important;
   flex-direction: row !important;
   justify-content: space-between !important;
   align-items: flex-start !important;
-  flex-wrap: nowrap !important;
-}
-
-.invoice-paper.pdf-mode .inv-doc-title {
-  text-align: right !important;
-}
-
-.invoice-paper.pdf-mode .inv-parties {
-  display: grid !important;
-  grid-template-columns: 1fr 1fr !important;
-  gap: 1.25rem !important;
-  margin-bottom: 1.25rem !important;
-}
-
-.invoice-paper.pdf-mode .inv-footer {
-  display: grid !important;
-  grid-template-columns: 1.3fr 1fr !important;
-  gap: 1.25rem !important;
-  border-top: 1px solid #ddd !important;
-  padding-top: 1rem !important;
+  padding-bottom: 12px !important;
 }
 
 .invoice-paper.pdf-mode .inv-logo-img {
   height: 76px !important;
 }
 
-.invoice-paper.pdf-mode .inv-doc-title h2 {
-  font-size: 1.375rem !important;
+.invoice-paper.pdf-mode .inv-title {
+  font-size: 22px !important;
+  margin-bottom: 6px !important;
 }
 
-.invoice-paper.pdf-mode .inv-doc-title .qnum {
-  font-size: 0.75rem !important;
+.invoice-paper.pdf-mode .inv-header-right {
+  font-size: 11px !important;
+  text-align: right !important;
 }
 
-.invoice-paper.pdf-mode .inv-parties,
-.invoice-paper.pdf-mode .inv-table td,
-.invoice-paper.pdf-mode .inv-totals table {
-  font-size: 0.78125rem !important;
+.invoice-paper.pdf-mode .inv-header-divider {
+  margin-bottom: 16px !important;
 }
 
-.invoice-paper.pdf-mode .inv-parties .label {
-  font-size: 0.625rem !important;
+.invoice-paper.pdf-mode .inv-details-row {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 20px !important;
+  margin-bottom: 16px !important;
+  font-size: 11px !important;
 }
 
-.invoice-paper.pdf-mode .inv-table th {
-  font-size: 0.6875rem !important;
-  padding: 0.5625rem 0.625rem !important;
+.invoice-paper.pdf-mode .inv-details-title {
+  font-size: 9px !important;
 }
 
-.invoice-paper.pdf-mode .inv-table td {
-  padding: 0.5625rem 0.625rem !important;
+.invoice-paper.pdf-mode .inv-details-name {
+  font-size: 13px !important;
 }
 
-.invoice-paper.pdf-mode .inv-totals tr.grand td {
-  font-size: 0.9375rem !important;
+.invoice-paper.pdf-mode .inv-table-new {
+  font-size: 11px !important;
 }
 
-.invoice-paper.pdf-mode .inv-footer {
-  font-size: 0.71875rem !important;
+.invoice-paper.pdf-mode .inv-table-new th {
+  font-size: 10px !important;
+  padding: 8px 6px !important;
 }
 
-.invoice-paper.pdf-mode .inv-footer h4 {
-  font-size: 0.6875rem !important;
+.invoice-paper.pdf-mode .inv-table-new td {
+  padding: 8px 6px !important;
 }
 
-/* Prevent breaks inside table, totals, terms and footer columns */
-.invoice-paper.pdf-mode table,
-.invoice-paper.pdf-mode tr,
-.invoice-paper.pdf-mode td,
-.invoice-paper.pdf-mode th,
-.invoice-paper.pdf-mode .inv-totals,
-.invoice-paper.pdf-mode .inv-footer,
-.invoice-paper.pdf-mode .inv-footer > div {
+.invoice-paper.pdf-mode .inv-bottom-row {
+  display: grid !important;
+  grid-template-columns: 1.3fr 1fr !important;
+  gap: 20px !important;
+  margin-top: 12px !important;
+}
+
+.invoice-paper.pdf-mode .inv-terms-bullets {
+  font-size: 10px !important;
+  margin-bottom: 12px !important;
+}
+
+.invoice-paper.pdf-mode .inv-bank-details {
+  font-size: 10px !important;
+}
+
+.invoice-paper.pdf-mode .inv-summary-table {
+  font-size: 11px !important;
+}
+
+.invoice-paper.pdf-mode .inv-summary-table td {
+  padding: 5px 8px !important;
+}
+
+.invoice-paper.pdf-mode .inv-summary-table .grand-total-row td {
+  font-size: 12px !important;
+}
+
+.invoice-paper.pdf-mode .inv-signatures-row {
+  margin-top: 30px !important;
+  padding-right: 120px !important;
+}
+
+.invoice-paper.pdf-mode .inv-signature-label {
+  font-size: 10px !important;
+}
+
+.invoice-paper.pdf-mode .inv-signature-sub {
+  font-size: 9px !important;
+}
+
+.invoice-paper.pdf-mode .inv-footer-divider {
+  margin-top: 20px !important;
+  margin-bottom: 8px !important;
+}
+
+.invoice-paper.pdf-mode .inv-footer-info {
+  font-size: 10px !important;
+}
+
+.invoice-paper.pdf-mode .inv-stamp {
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+}
+
+/* Prevent breaks inside critical print elements */
+.invoice-paper.pdf-mode .inv-table-new,
+.invoice-paper.pdf-mode .inv-bottom-row,
+.invoice-paper.pdf-mode .inv-signatures-row,
+.invoice-paper.pdf-mode .inv-footer-info {
   page-break-inside: avoid !important;
   break-inside: avoid !important;
 }

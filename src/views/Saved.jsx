@@ -5,6 +5,18 @@ import { getQuotations, deleteQuotation } from '../api';
 import Invoice from './Invoice';
 import html2pdf from 'html2pdf.js';
 
+const waitForImages = (element) => {
+  const images = element.querySelectorAll('img');
+  const promises = Array.from(images).map((img) => {
+    if (img.complete) return Promise.resolve();
+    return new Promise((resolve) => {
+      img.onload = resolve;
+      img.onerror = resolve;
+    });
+  });
+  return Promise.all(promises);
+};
+
 
 const DEFAULT_COMPANY = {
   name: 'RetailFix',
@@ -71,6 +83,8 @@ export default function Saved({ refreshKey, onModify }) {
     const element = document.getElementById('invoice-render-saved');
     if (!element) return;
 
+    await waitForImages(element);
+
     element.classList.add('pdf-mode');
 
     const opt = {
@@ -80,6 +94,8 @@ export default function Saved({ refreshKey, onModify }) {
       html2canvas: {
         scale: 2,
         useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
         scrollX: 0,
         scrollY: 0
       },

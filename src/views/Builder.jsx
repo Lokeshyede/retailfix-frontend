@@ -5,6 +5,18 @@ import { getProducts, getCustomers, saveQuotation, createCustomer, getNextQuotat
 import Invoice from './Invoice';
 import html2pdf from 'html2pdf.js';
 
+const waitForImages = (element) => {
+  const images = element.querySelectorAll('img');
+  const promises = Array.from(images).map((img) => {
+    if (img.complete) return Promise.resolve();
+    return new Promise((resolve) => {
+      img.onload = resolve;
+      img.onerror = resolve;
+    });
+  });
+  return Promise.all(promises);
+};
+
 
 function money(n) {
   return '₹' + Number(n).toLocaleString('en-IN', { maximumFractionDigits: 2 });
@@ -474,6 +486,8 @@ export default function Builder({ onQuoteSaved, editQuote, clearEditQuote }) {
     const element = document.getElementById('invoice-render');
     if (!element) return;
 
+    await waitForImages(element);
+
     element.classList.add('pdf-mode');
 
     const opt = {
@@ -483,6 +497,8 @@ export default function Builder({ onQuoteSaved, editQuote, clearEditQuote }) {
       html2canvas: {
         scale: 2,
         useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
         scrollX: 0,
         scrollY: 0
       },

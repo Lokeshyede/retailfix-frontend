@@ -1,4 +1,5 @@
 import logoImg from '../assets/logo.png';
+import stampImg from '../assets/stamp.png';
 
 const DEFAULT_TERMS = [
   'Prices are factory rates — no middlemen, no hidden costs.',
@@ -11,6 +12,18 @@ const DEFAULT_TERMS = [
 
 function money(n) {
   return '₹' + Number(n).toLocaleString('en-IN', { maximumFractionDigits: 2 });
+}
+
+function getHSNCode(name, index) {
+  if (name.toLowerCase().includes("supermarket")) return `SMR-${String(index + 1).padStart(3, '0')}`;
+  if (name.toLowerCase().includes("pharmacy")) return `PDR-${String(index + 1).padStart(3, '0')}`;
+  if (name.toLowerCase().includes("medicine") || name.toLowerCase().includes("medical")) return `WMR-${String(index + 1).padStart(3, '0')}`;
+  if (name.toLowerCase().includes("end cap")) return `ECDR-${String(index + 1).padStart(3, '0')}`;
+  
+  // Default fallback
+  const initials = name.split(/[\s-]+/).map(w => w && w[0]).join('').toUpperCase().replace(/[^A-Z]/g, '');
+  const prefix = initials.length >= 2 ? initials.substring(0, 4) : 'RF';
+  return `${prefix}-${String(index + 1).padStart(3, '0')}`;
 }
 
 export default function Invoice({ quote, company }) {
@@ -48,123 +61,157 @@ export default function Invoice({ quote, company }) {
       );
 
   return (
-    <>
+    <div className="invoice-container">
       {/* Header */}
-      <div className="inv-head">
-        <div className="inv-logo-mark">
+      <div className="inv-header-row">
+        <div className="inv-header-left">
           <img src={logoImg} alt="retailfix" className="inv-logo-img" />
         </div>
-        <div className="inv-doc-title">
-          <h2>QUOTATION</h2>
-          <div className="qnum">{qNum}</div>
-          <div style={{ fontSize: 11.5, color: '#777', marginTop: 3 }}>Date: {quote.date}</div>
+        <div className="inv-header-right">
+          <h1 className="inv-title">QUOTATION</h1>
+          <div className="inv-meta-item"><strong>Quotation No:</strong> {qNum}</div>
+          <div className="inv-meta-item"><strong>Date:</strong> {quote.date}</div>
         </div>
       </div>
 
-      {/* Parties */}
-      <div className="inv-parties">
-        <div>
-          <div className="label">From</div>
-          <div style={{ fontWeight: 700 }}>{company.name}</div>
-          <div>{company.address}</div>
-          <div>Ph: {company.phone}</div>
+      <div className="inv-header-divider"></div>
+
+      {/* Customer Details */}
+      <div className="inv-details-row">
+        <div className="inv-details-col">
+          <div className="inv-details-title">FROM</div>
+          <div className="inv-details-name">{company.name}</div>
+          {company.address && <div>{company.address}</div>}
+          {company.phone && <div>Ph: {company.phone}</div>}
           <div>{company.email} · {company.web}</div>
-          {company.gstin && <div style={{ fontWeight: 'bold', color: '#333', marginTop: 3 }}>GSTIN: {company.gstin}</div>}
+          {company.gstin && <div className="inv-gstin-line">GSTIN: {company.gstin}</div>}
         </div>
-        <div>
-          <div className="label">Quotation For</div>
-          <div style={{ fontWeight: 700 }}>{customer.name}</div>
+        <div className="inv-details-col">
+          <div className="inv-details-title">QUOTATION FOR</div>
+          <div className="inv-details-name">{customer.name}</div>
           {customer.address && <div>{customer.address}</div>}
           {customer.city && <div>{customer.city}</div>}
           {customer.phone && <div>Ph: {customer.phone}</div>}
           {customer.email && <div>Email: {customer.email}</div>}
-          {customer.gstin && <div style={{ fontWeight: 'bold', color: '#333', marginTop: 3 }}>GSTIN: {customer.gstin}</div>}
+          {customer.gstin && <div className="inv-gstin-line">GSTIN: {customer.gstin}</div>}
         </div>
       </div>
 
-      {/* Items table – wrapped for horizontal scroll on mobile */}
-      <div className="inv-table-wrap">
-      <table className="inv-table">
-        <thead>
-          <tr>
-            <th style={{ width: 30 }}>#</th>
-            <th>Item</th>
-            <th>Unit</th>
-            <th className="r">Price</th>
-            <th className="r">Qty</th>
-            <th className="r">Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          {quote.items.map((it, i) => (
-            <tr key={i}>
-              <td>{i + 1}</td>
-              <td>
-                <strong>{it.name}</strong><br />
-                <span style={{ color: '#999', fontSize: 10.5 }}>{it.category}</span>
-              </td>
-              <td>{it.unit}</td>
-              <td className="r">{money(it.price)}</td>
-              <td className="r">{it.qty}</td>
-              <td className="r"><strong>{money(it.line_total ?? it.lineTotal)}</strong></td>
+      {/* Items Table */}
+      <div className="inv-table-container">
+        <table className="inv-table-new">
+          <thead>
+            <tr>
+              <th style={{ width: '40px', textAlign: 'center' }}>#</th>
+              <th style={{ textAlign: 'left' }}>Item Description</th>
+              <th style={{ width: '120px', textAlign: 'center' }}>HSN Code</th>
+              <th style={{ width: '60px', textAlign: 'center' }}>Qty</th>
+              <th style={{ width: '110px', textAlign: 'right' }}>Unit Price</th>
+              <th style={{ width: '120px', textAlign: 'right' }}>Amount</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-      </div>
-
-      {/* Totals */}
-      <div className="inv-totals">
-        <table>
+          </thead>
           <tbody>
-            <tr><td>Subtotal</td><td className="r">{money(t.subtotal)}</td></tr>
-            {discountAmount > 0 && (
-              <tr style={{ color: 'var(--danger)' }}>
-                <td>Discount ({discountPercent.toFixed(1)}%)</td>
-                <td className="r">-{money(discountAmount)}</td>
+            {quote.items.map((it, i) => (
+              <tr key={i}>
+                <td style={{ textAlign: 'center' }}>{i + 1}</td>
+                <td style={{ textAlign: 'left' }}>
+                  <div className="inv-item-name">{it.name}</div>
+                </td>
+                <td style={{ textAlign: 'center' }}>{getHSNCode(it.name, i)}</td>
+                <td style={{ textAlign: 'center' }}>{it.qty}</td>
+                <td style={{ textAlign: 'right' }}>{money(it.price)}</td>
+                <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{money(it.line_total ?? it.lineTotal)}</td>
               </tr>
-            )}
-            {(t.delivery > 0) && (
-              <tr><td>Delivery / Installation</td><td className="r">{money(t.delivery)}</td></tr>
-            )}
-            {gstRows}
-            <tr className="grand">
-              <td>Grand Total</td>
-              <td className="r">{money(t.grand_total ?? t.grandTotal)}</td>
-            </tr>
+            ))}
           </tbody>
         </table>
       </div>
 
-      {/* Footer */}
-      <div className="inv-footer">
-        <div>
-          <h4>Terms &amp; Conditions</h4>
-          <ul>{termsList.map((term, i) => <li key={i}>{term}</li>)}</ul>
-        </div>
-        <div>
-          <h4>Bank Details</h4>
+      {/* Terms & Totals Area */}
+      <div className="inv-bottom-row">
+        <div className="inv-bottom-left">
+          <div className="inv-bottom-title">TERMS &amp; CONDITIONS:</div>
+          <ul className="inv-terms-bullets">
+            {termsList.map((term, i) => <li key={i}>{term}</li>)}
+          </ul>
+
+          <div className="inv-bottom-title" style={{ marginTop: '20px' }}>BANK DETAILS:</div>
           {company.bankName ? (
-            <div style={{ fontSize: 11, color: '#333', lineHeight: 1.4, marginBottom: 12 }}>
-              <strong>A/c Name:</strong> {company.accountHolder || company.name}<br />
-              <strong>Bank:</strong> {company.bankName}<br />
-              <strong>A/c No:</strong> {company.accountNumber}<br />
-              <strong>IFSC:</strong> {company.ifscCode}<br />
-              {company.branch && <><strong>Branch:</strong> {company.branch}<br /></>}
+            <div className="inv-bank-details">
+              <div><strong>Bank Name:</strong> {company.bankName}</div>
+              <div><strong>A/C Name:</strong> {company.accountHolder || company.name}</div>
+              <div><strong>A/C No:</strong> {company.accountNumber}</div>
+              <div><strong>IFSC Code:</strong> {company.ifscCode}</div>
+              {company.branch && <div><strong>Branch:</strong> {company.branch}</div>}
             </div>
           ) : (
-            <div style={{ color: '#777', fontSize: 11, marginBottom: 12 }}>
+            <div className="inv-bank-details-empty">
               For bank details &amp; payment instructions, please contact our office.
             </div>
           )}
-          <h4>Contact &amp; Support</h4>
-          <div style={{ fontWeight: 700 }}>{company.phone}</div>
-          <div>{company.email}</div>
-          <div className="inv-sign">
-            <div className="line">Authorized Signatory — {company.name}</div>
-          </div>
+        </div>
+
+        <div className="inv-bottom-right">
+          <table className="inv-summary-table">
+            <tbody>
+              <tr>
+                <td>Subtotal</td>
+                <td className="r">{money(t.subtotal)}</td>
+              </tr>
+              {discountAmount > 0 && (
+                <tr style={{ color: 'var(--primary)' }}>
+                  <td>Discount ({discountPercent.toFixed(1)}%)</td>
+                  <td className="r">-{money(discountAmount)}</td>
+                </tr>
+              )}
+              {t.delivery > 0 && (
+                <tr>
+                  <td>Delivery / Installation</td>
+                  <td className="r">{money(t.delivery)}</td>
+                </tr>
+              )}
+              {gstMode === 'split' ? (
+                <>
+                  <tr><td>CGST ({(t.gst_rate ?? t.gstRate) / 2}%)</td><td className="r">{money(t.cgst)}</td></tr>
+                  <tr><td>SGST ({(t.gst_rate ?? t.gstRate) / 2}%)</td><td className="r">{money(t.sgst)}</td></tr>
+                </>
+              ) : gstMode === 'igst' ? (
+                <tr><td>IGST ({t.gst_rate ?? t.gstRate}%)</td><td className="r">{money(t.igst)}</td></tr>
+              ) : (
+                <tr><td colSpan={2} style={{ color: '#888', fontSize: '11px', fontStyle: 'italic' }}>GST not applicable</td></tr>
+              )}
+              <tr className="grand-total-row">
+                <td>Grand Total</td>
+                <td className="r">{money(t.grand_total ?? t.grandTotal)}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
-    </>
+
+      {/* Signatures Area */}
+      <div className="inv-signatures-row">
+        <div className="inv-signature-col">
+          <div className="inv-signature-line"></div>
+          <div className="inv-signature-label">Authorized Signatory</div>
+          <div className="inv-signature-sub">RetailFix – Display Rack Solutions</div>
+        </div>
+      </div>
+
+      {/* Footer Divider */}
+      <div className="inv-footer-divider"></div>
+
+      {/* Center Footer Info */}
+      <div className="inv-footer-info">
+        <span>📞 {company.phone}</span>
+        <span className="inv-footer-sep">|</span>
+        <span>✉️ {company.email}</span>
+        <span className="inv-footer-sep">|</span>
+        <span>🌐 {company.web}</span>
+      </div>
+
+      {/* Circular Stamp */}
+      <img src={stampImg} alt="RetailFix Stamp" className="inv-stamp" crossOrigin="anonymous" loading="eager" />
+    </div>
   );
 }
