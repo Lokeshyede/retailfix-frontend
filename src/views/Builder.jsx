@@ -1000,7 +1000,7 @@ export default function Builder({ onQuoteSaved, editQuote, clearEditQuote }) {
           </>
         }
       >
-        <div className="modal-body modal-body-preview" style={{ background: '#e9e6dc', padding: 24 }}>
+        <div className="modal-body modal-body-preview" style={{ background: 'var(--safety-light)', padding: 24 }}>
           <div style={{ overflowX: 'auto', width: '100%' }}>
             <div className="invoice-paper card-pad" id="invoice-render" style={{ padding: 32, borderRadius: 8 }}>
               {currentQuote && <Invoice quote={currentQuote} company={company} />}

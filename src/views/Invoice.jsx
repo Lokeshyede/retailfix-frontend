@@ -1,3 +1,5 @@
+import logoImg from '../assets/logo.png';
+
 const DEFAULT_TERMS = [
   'Prices are factory rates — no middlemen, no hidden costs.',
   '50% advance payment required to confirm order; balance before/at delivery.',
@@ -50,11 +52,7 @@ export default function Invoice({ quote, company }) {
       {/* Header */}
       <div className="inv-head">
         <div className="inv-logo-mark">
-          <div className="inv-logo-box">R</div>
-          <div>
-            <div className="inv-co-name">{company.name}</div>
-            <div className="inv-co-sub">{company.tagline}</div>
-          </div>
+          <img src={logoImg} alt="retailfix" className="inv-logo-img" />
         </div>
         <div className="inv-doc-title">
           <h2>QUOTATION</h2>

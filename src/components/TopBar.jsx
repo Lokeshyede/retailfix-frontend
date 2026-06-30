@@ -1,12 +1,10 @@
+import logoImg from '../assets/logo.png';
+
 export default function TopBar({ activeView, onSwitch }) {
   return (
     <div className="topbar">
       <div className="brand">
-        <div className="brand-mark">R</div>
-        <div className="brand-text">
-          <span className="name">RETAILFIX</span>
-          <span className="tag">Quotation Studio</span>
-        </div>
+        <img src={logoImg} alt="retailfix - Smart Solution For Modern Retail" className="brand-logo" />
       </div>
       <div className="tabs">
         {[

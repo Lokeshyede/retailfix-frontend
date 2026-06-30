@@ -366,7 +366,7 @@ export default function Saved({ refreshKey, onModify }) {
           </>
         }
       >
-        <div className="modal-body modal-body-preview" style={{ background: '#e9e6dc', padding: 24 }}>
+        <div className="modal-body modal-body-preview" style={{ background: 'var(--safety-light)', padding: 24 }}>
           <div style={{ overflowX: 'auto', width: '100%' }}>
             <div className="invoice-paper card-pad" id="invoice-render-saved" style={{ padding: 32, borderRadius: 8 }}>
               {viewQuote && <Invoice quote={viewQuote} company={company} />}
