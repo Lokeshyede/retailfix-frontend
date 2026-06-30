@@ -487,6 +487,10 @@ export default function Builder({ onQuoteSaved, editQuote, clearEditQuote }) {
     if (!element) return;
 
     await waitForImages(element);
+    await document.fonts.ready;
+    // Browser ko render complete karne ka time do
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    await new Promise(resolve => setTimeout(resolve, 300));
 
     element.classList.add('pdf-mode');
 
@@ -500,7 +504,9 @@ export default function Builder({ onQuoteSaved, editQuote, clearEditQuote }) {
         allowTaint: true,
         backgroundColor: '#ffffff',
         scrollX: 0,
-        scrollY: 0
+        scrollY: 0,
+        logging: false,
+        imageTimeout: 15000
       },
       jsPDF: {
         unit: 'px',

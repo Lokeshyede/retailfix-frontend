@@ -1,5 +1,6 @@
 import logoImg from '../assets/logo.png';
 import stampImg from '../assets/stamp.png';
+import sealImg from '../assets/seal.png';
 
 const DEFAULT_TERMS = [
   'Prices are factory rates — no middlemen, no hidden costs.',
@@ -9,6 +10,7 @@ const DEFAULT_TERMS = [
   'Installation support available on request.',
   'Quotation valid for 15 days from the date of issue.',
 ];
+
 
 function money(n) {
   return '₹' + Number(n).toLocaleString('en-IN', { maximumFractionDigits: 2 });
@@ -210,7 +212,8 @@ export default function Invoice({ quote, company }) {
         <span>🌐 {company.web}</span>
       </div>
 
-      {/* Circular Stamp */}
+      {/* Circular Seal & Stamp */}
+      <img src={sealImg} alt="RetailFix Seal" className="inv-seal" crossOrigin="anonymous" loading="eager" />
       <img src={stampImg} alt="RetailFix Stamp" className="inv-stamp" crossOrigin="anonymous" loading="eager" />
     </div>
   );

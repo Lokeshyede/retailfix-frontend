@@ -291,7 +291,24 @@ textarea{resize:vertical;min-height:3.75rem;}
 
 .print-sheet{display:none;}
 .invoice-paper{position:relative !important;width:100%;max-width:780px;margin:0 auto;background:#ffffff;color:#1f1f1f;font-family:'Archivo',sans-serif;box-sizing:border-box;}
-.inv-stamp{display:block;position:absolute;bottom:20px;right:20px;width:100px;height:auto;z-index:1000;pointer-events:none;opacity:1;}
+.invoice-container{position:relative;}
+.inv-stamp{
+    position:absolute;
+    right:30px;
+    bottom:30px;
+    width:120px;
+    height:auto;
+    z-index:9999;
+}
+.inv-seal{
+    position:absolute;
+    right:40px;
+    bottom:40px;
+    width:100px;
+    height:auto;
+    z-index:9998;
+    opacity:0.85;
+}
 /* Header styling */
 .inv-header-row {
   display: flex;
@@ -660,11 +677,7 @@ textarea{resize:vertical;min-height:3.75rem;}
   font-size: 10px !important;
 }
 
-.invoice-paper.pdf-mode .inv-stamp {
-  position: fixed !important;
-  bottom: 20px !important;
-  right: 20px !important;
-}
+
 
 /* Prevent breaks inside critical print elements */
 .invoice-paper.pdf-mode .inv-table-new,
