@@ -36,6 +36,7 @@ export default function Invoice({ quote, company }) {
   const discountAmount = t.discount_amount ?? t.discountAmount ?? 0;
   const discountPercent = t.discount_percent ?? t.discountPercent ?? 0;
   const validityDays = quote.validity_days ?? quote.validityDays ?? 15;
+  const taxableVal = t.taxableAmount ?? t.taxable_amount ?? (t.subtotal - discountAmount);
 
   let gstRows = null;
   if (gstMode === 'split') {
@@ -166,12 +167,10 @@ export default function Invoice({ quote, company }) {
                   <td className="r">-{money(discountAmount)}</td>
                 </tr>
               )}
-              {t.delivery > 0 && (
-                <tr>
-                  <td>Delivery / Installation</td>
-                  <td className="r">{money(t.delivery)}</td>
-                </tr>
-              )}
+              <tr style={{ fontWeight: 600 }}>
+                <td>Taxable Amount</td>
+                <td className="r">{money(taxableVal)}</td>
+              </tr>
               {gstMode === 'split' ? (
                 <>
                   <tr><td>CGST ({(t.gst_rate ?? t.gstRate) / 2}%)</td><td className="r">{money(t.cgst)}</td></tr>
@@ -181,6 +180,12 @@ export default function Invoice({ quote, company }) {
                 <tr><td>IGST ({t.gst_rate ?? t.gstRate}%)</td><td className="r">{money(t.igst)}</td></tr>
               ) : (
                 <tr><td colSpan={2} style={{ color: '#888', fontSize: '11px', fontStyle: 'italic' }}>GST not applicable</td></tr>
+              )}
+              {t.delivery > 0 && (
+                <tr>
+                  <td>Delivery / Installation</td>
+                  <td className="r">{money(t.delivery)}</td>
+                </tr>
               )}
               <tr className="grand-total-row">
                 <td>Grand Total</td>

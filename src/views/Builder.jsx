@@ -51,7 +51,7 @@ function calcTotals(cart, products, gstMode, gstRate, delivery, discountType, di
     discountPercent = subtotal > 0 ? (discountAmount / subtotal) * 100 : 0;
   }
 
-  const taxableAmount = Math.max(0, subtotal - discountAmount) + safeDelivery;
+  const taxableAmount = Math.max(0, subtotal - discountAmount);
   let gstAmount = 0, cgst = 0, sgst = 0, igst = 0;
   if (gstMode !== 'none') {
     gstAmount = taxableAmount * (safeGstRate / 100);
@@ -63,7 +63,7 @@ function calcTotals(cart, products, gstMode, gstRate, delivery, discountType, di
     }
   }
 
-  const finalGrandTotal = taxableAmount + gstAmount;
+  const finalGrandTotal = taxableAmount + gstAmount + safeDelivery;
 
   return {
     subtotal,
@@ -940,9 +940,10 @@ export default function Builder({ onQuoteSaved, editQuote, clearEditQuote }) {
                   <span>-{money(totals.discountAmount)}</span>
                 </div>
               )}
-              {totals.delivery > 0 && (
-                <div className="rf-trow"><span>Delivery / Installation</span><span>{money(totals.delivery)}</span></div>
-              )}
+              <div className="rf-trow" style={{ fontWeight: 600 }}>
+                <span>Taxable Amount</span>
+                <span>{money(totals.taxableAmount)}</span>
+              </div>
               {gstMode === 'split' && (
                 <>
                   <div className="rf-trow"><span>CGST ({(totals.gstRate / 2).toFixed(1)}%)</span><span>{money(totals.cgst)}</span></div>
@@ -951,6 +952,9 @@ export default function Builder({ onQuoteSaved, editQuote, clearEditQuote }) {
               )}
               {gstMode === 'igst' && (
                 <div className="rf-trow"><span>IGST ({totals.gstRate}%)</span><span>{money(totals.igst)}</span></div>
+              )}
+              {totals.delivery > 0 && (
+                <div className="rf-trow"><span>Delivery / Installation</span><span>{money(totals.delivery)}</span></div>
               )}
               <div className="rf-trow grand"><span>Grand Total</span><span>{money(totals.grandTotal)}</span></div>
             </div>
