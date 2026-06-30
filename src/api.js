@@ -47,3 +47,14 @@ export const deleteCustomer = (id) => api.delete(`/customers/${id}`);
 // ── Backup & Restore ──────────────────────────────────────────────────────────
 export const getBackupData = () => api.get('/backup').then(r => r.data);
 export const restoreBackupData = (data) => api.post('/restore', data).then(r => r.data);
+
+// ── Product Excel (CSV) Import/Export ─────────────────────────────────────────
+export const exportProductsCSV = () => api.get('/products/export', { responseType: 'blob' }).then(r => r.data);
+export const importProductsCSV = (file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  return api.post('/products/import', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  }).then(r => r.data);
+};
+

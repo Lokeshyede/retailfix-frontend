@@ -16,18 +16,6 @@ function money(n) {
   return '₹' + Number(n).toLocaleString('en-IN', { maximumFractionDigits: 2 });
 }
 
-function getHSNCode(name, index) {
-  if (name.toLowerCase().includes("supermarket")) return `SMR-${String(index + 1).padStart(3, '0')}`;
-  if (name.toLowerCase().includes("pharmacy")) return `PDR-${String(index + 1).padStart(3, '0')}`;
-  if (name.toLowerCase().includes("medicine") || name.toLowerCase().includes("medical")) return `WMR-${String(index + 1).padStart(3, '0')}`;
-  if (name.toLowerCase().includes("end cap")) return `ECDR-${String(index + 1).padStart(3, '0')}`;
-  
-  // Default fallback
-  const initials = name.split(/[\s-]+/).map(w => w && w[0]).join('').toUpperCase().replace(/[^A-Z]/g, '');
-  const prefix = initials.length >= 2 ? initials.substring(0, 4) : 'RF';
-  return `${prefix}-${String(index + 1).padStart(3, '0')}`;
-}
-
 export default function Invoice({ quote, company }) {
   const t = quote.totals;
   const gstMode = quote.gstMode || quote.gst_mode;
@@ -120,7 +108,7 @@ export default function Invoice({ quote, company }) {
                 <td style={{ textAlign: 'left' }}>
                   <div className="inv-item-name">{it.name}</div>
                 </td>
-                <td style={{ textAlign: 'center' }}>{getHSNCode(it.name, i)}</td>
+                <td style={{ textAlign: 'center' }}>{it.hsn_code ? it.hsn_code : 'N/A'}</td>
                 <td style={{ textAlign: 'center' }}>{it.qty}</td>
                 <td style={{ textAlign: 'right' }}>{money(it.price)}</td>
                 <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{money(it.line_total ?? it.lineTotal)}</td>

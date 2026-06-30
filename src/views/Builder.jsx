@@ -419,7 +419,7 @@ export default function Builder({ onQuoteSaved, editQuote, clearEditQuote }) {
       if (isNaN(parsedQty) || parsedQty < 1) parsedQty = 1;
       let parsedPrice = parseFloat(customPrices[id]);
       if (isNaN(parsedPrice) || parsedPrice < 0) parsedPrice = p.price;
-      return { name: p.name, category: p.category, unit: p.unit, price: parsedPrice, qty: parsedQty, line_total: parsedPrice * parsedQty };
+      return { name: p.name, category: p.category, unit: p.unit, price: parsedPrice, qty: parsedQty, line_total: parsedPrice * parsedQty, hsn_code: p.hsn_code || '' };
     });
 
     setCurrentQuote({

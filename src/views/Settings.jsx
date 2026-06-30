@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useToast } from '../components/Toast';
 import Modal from '../components/Modal';
-import { getBackupData, restoreBackupData } from '../api';
+import { getBackupData, restoreBackupData, exportProductsCSV, importProductsCSV } from '../api';
 
 const DEFAULT_TERMS = [
   'Prices are factory rates — no middlemen, no hidden costs.',
@@ -28,12 +28,12 @@ const DEFAULT_COMPANY = {
 };
 
 const SEED_PRODUCTS = [
-  {id: "1", name: "Supermarket Display Rack", category: "Supermarket", unit: "per piece", price: 4999, desc: "Heavy-duty adjustable shelving for organized display."},
-  {id: "2", name: "Pharmacy Display Rack", category: "Pharmacy", unit: "per piece", price: 3999, desc: "Neatly display medicines for easy customer access."},
-  {id: "3", name: "Garment Display Rack", category: "Garment", unit: "per piece", price: 3999, desc: "Attractive fixtures for folded & hanging apparel."},
-  {id: "4", name: "Corner Shelf (Supermarket)", category: "Supermarket", unit: "per piece", price: 3499, desc: "Utilize every inch with stylish corner shelves."},
-  {id: "5", name: "End Cap Display Rack", category: "Supermarket", unit: "per piece", price: 4499, desc: "Attract attention with displays at aisle ends."},
-  {id: "6", name: "Wall-mounted Medicine Rack", category: "Pharmacy", unit: "per piece", price: 2999, desc: "Utilize walls for organized medicine displays."}
+  {id: "1", name: "Supermarket Display Rack", category: "Supermarket", unit: "per piece", price: 4999, desc: "Heavy-duty adjustable shelving for organized display.", hsn_code: "9403"},
+  {id: "2", name: "Pharmacy Display Rack", category: "Pharmacy", unit: "per piece", price: 3999, desc: "Neatly display medicines for easy customer access.", hsn_code: "9403"},
+  {id: "3", name: "Garment Display Rack", category: "Garment", unit: "per piece", price: 3999, desc: "Attractive fixtures for folded & hanging apparel.", hsn_code: "9403"},
+  {id: "4", name: "Corner Shelf (Supermarket)", category: "Supermarket", unit: "per piece", price: 3499, desc: "Utilize every inch with stylish corner shelves.", hsn_code: "9403"},
+  {id: "5", name: "End Cap Display Rack", category: "Supermarket", unit: "per piece", price: 4499, desc: "Attract attention with displays at aisle ends.", hsn_code: "9403"},
+  {id: "6", name: "Wall-mounted Medicine Rack", category: "Pharmacy", unit: "per piece", price: 2999, desc: "Utilize walls for organized medicine displays.", hsn_code: "9403"}
 ];
 
 const SEED_CUSTOMERS = [
@@ -180,6 +180,41 @@ export default function Settings() {
     }
   };
 
+  const handleExportCSV = async () => {
+    try {
+      showToast('Exporting catalog...');
+      const data = await exportProductsCSV();
+      const url = window.URL.createObjectURL(new Blob([data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `products_export_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      showToast('Product catalog exported successfully ✓');
+    } catch (err) {
+      showToast('Export failed', 'err');
+    }
+  };
+
+  const handleImportCSV = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    try {
+      showToast('Importing products...');
+      const res = await importProductsCSV(file);
+      showToast(`Imported ${res.imported} products successfully ✓`);
+      fetchStats(); // refresh database stats
+    } catch (err) {
+      const errMsg = err.response?.data?.detail || 'Import failed';
+      showToast(errMsg, 'err');
+    } finally {
+      e.target.value = ''; // reset file input
+    }
+  };
+
   const handleCompanyChange = (key, val) => {
     setCompany(c => ({ ...c, [key]: val }));
   };
@@ -277,6 +312,26 @@ export default function Settings() {
                   onChange={handleRestoreFile} 
                   style={{ display: 'none' }} 
                   disabled={restoring}
+                />
+              </label>
+            </div>
+
+            <h3 style={{ fontSize: 14, fontFamily: 'Archivo Black', margin: '24px 0 10px 0', borderTop: '1px solid var(--line)', paddingTop: 16 }}>Product Excel (CSV) Import/Export</h3>
+            <p style={{ fontSize: 13, color: '#6b6557', lineHeight: 1.5, marginBottom: 12 }}>
+              Import new products or export your current catalog using Excel-compatible CSV files.
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+              <button className="btn btn-ghost" onClick={handleExportCSV}>
+                📥 Export Catalog (CSV)
+              </button>
+              
+              <label className="btn btn-ghost" style={{ margin: 0, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', width: 'auto' }}>
+                📤 Import Catalog (CSV)
+                <input 
+                  type="file" 
+                  accept=".csv" 
+                  onChange={handleImportCSV} 
+                  style={{ display: 'none' }} 
                 />
               </label>
             </div>

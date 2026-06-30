@@ -6,7 +6,7 @@ import { getProducts, createProduct, updateProduct, deleteProduct } from '../api
 const DEFAULT_CATEGORIES = ['Supermarket', 'Pharmacy', 'Garment', 'Custom Fixtures', 'Accessories', 'Other'];
 const UNITS = ['per piece', 'per set', 'per sq.ft.', 'per running ft.', 'per unit'];
 
-const emptyForm = { name: '', category: 'Supermarket', unit: 'per piece', price: '', desc: '' };
+const emptyForm = { name: '', category: 'Supermarket', unit: 'per piece', price: '', desc: '', hsn_code: '' };
 
 function money(n) {
   return '₹' + Number(n).toLocaleString('en-IN', { maximumFractionDigits: 2 });
@@ -55,7 +55,7 @@ export default function Catalog({ onProductsChange }) {
   const openEdit = (p) => {
     setEditId(p.id);
     const isDefault = DEFAULT_CATEGORIES.includes(p.category);
-    setForm({ name: p.name, category: isDefault ? p.category : '', unit: p.unit, price: String(p.price), desc: p.desc || '' });
+    setForm({ name: p.name, category: isDefault ? p.category : '', unit: p.unit, price: String(p.price), desc: p.desc || '', hsn_code: p.hsn_code || '' });
     if (!isDefault) {
       setIsCustomCategory(true);
       setCustomCategoryVal(p.category);
@@ -77,6 +77,13 @@ export default function Catalog({ onProductsChange }) {
     const price = parseFloat(form.price);
     if (isNaN(price) || price < 0) { showToast('Enter a valid price', 'err'); return; }
 
+    const hsn_code = form.hsn_code ? form.hsn_code.trim() : '';
+    if (!hsn_code) { showToast('HSN Code is required', 'err'); return; }
+    if (!/^\d{4}$|^\d{6}$|^\d{8}$/.test(hsn_code)) {
+      showToast('HSN Code must be 4, 6, or 8 digits and contain only numbers', 'err');
+      return;
+    }
+
     // Enforce product uniqueness strictly
     const duplicate = products.some(p => p.name.trim().toLowerCase() === form.name.trim().toLowerCase() && p.id !== editId);
     if (duplicate) {
@@ -86,7 +93,7 @@ export default function Catalog({ onProductsChange }) {
 
     setSaving(true);
     try {
-      const payload = { ...form, category, price };
+      const payload = { ...form, category, price, hsn_code };
 
       if (editId) {
         await updateProduct(editId, payload);
@@ -242,6 +249,9 @@ export default function Catalog({ onProductsChange }) {
                 </div>
                 <div className="product-name">{p.name}</div>
                 <div className="product-desc">{p.desc || ''}</div>
+                <div style={{ fontSize: 11, color: 'var(--steel-600)', marginTop: 4, fontFamily: 'JetBrains Mono' }}>
+                  HSN: {p.hsn_code || 'N/A'}
+                </div>
               </div>
               
               <div style={{ marginTop: 'auto' }}>
@@ -315,6 +325,11 @@ export default function Catalog({ onProductsChange }) {
           <div className="field">
             <label>Price (₹) *</label>
             <input type="number" min="0" placeholder="4999" {...field('price')} />
+          </div>
+
+          <div className="field">
+            <label>HSN Code *</label>
+            <input type="text" placeholder="e.g. 9403" {...field('hsn_code')} />
           </div>
           
           <div className="field">
