@@ -125,21 +125,6 @@ export default function Invoice({ quote, company }) {
           <ul className="inv-terms-bullets">
             {termsList.map((term, i) => <li key={i}>{term}</li>)}
           </ul>
-
-          <div className="inv-bottom-title" style={{ marginTop: '20px' }}>BANK DETAILS:</div>
-          {company.bankName ? (
-            <div className="inv-bank-details">
-              <div><strong>Bank Name:</strong> {company.bankName}</div>
-              <div><strong>A/C Name:</strong> {company.accountHolder || company.name}</div>
-              <div><strong>A/C No:</strong> {company.accountNumber}</div>
-              <div><strong>IFSC Code:</strong> {company.ifscCode}</div>
-              {company.branch && <div><strong>Branch:</strong> {company.branch}</div>}
-            </div>
-          ) : (
-            <div className="inv-bank-details-empty">
-              For bank details &amp; payment instructions, please contact our office.
-            </div>
-          )}
         </div>
 
         <div className="inv-bottom-right">
@@ -186,7 +171,30 @@ export default function Invoice({ quote, company }) {
 
       {/* Signatures Area */}
       <div className="inv-signatures-row">
+        {/* Left Column: Bank Details */}
+        <div className="inv-bank-details-col">
+          <div className="inv-bottom-title">BANK DETAILS</div>
+          {company.bankName ? (
+            <div className="inv-bank-details">
+              <div><strong>Bank Name:</strong> {company.bankName}</div>
+              <div><strong>A/C Name:</strong> {company.accountHolder || company.name}</div>
+              <div><strong>A/C No:</strong> {company.accountNumber}</div>
+              <div><strong>IFSC Code:</strong> {company.ifscCode}</div>
+              {company.branch && <div><strong>Branch:</strong> {company.branch}</div>}
+            </div>
+          ) : (
+            <div className="inv-bank-details-empty">
+              For bank details &amp; payment instructions, please contact our office.
+            </div>
+          )}
+        </div>
+
+        {/* Right Column: Signatory Section */}
         <div className="inv-signature-col">
+          <div className="inv-signature-wrapper">
+            <img src={sealImg} alt="RetailFix Seal" className="inv-seal" crossOrigin="anonymous" loading="eager" />
+            <img src={stampImg} alt="RetailFix Stamp" className="inv-stamp" crossOrigin="anonymous" loading="eager" />
+          </div>
           <div className="inv-signature-line"></div>
           <div className="inv-signature-label">Authorized Signatory</div>
           <div className="inv-signature-sub">RetailFix – Display Rack Solutions</div>
@@ -204,10 +212,6 @@ export default function Invoice({ quote, company }) {
         <span className="inv-footer-sep">|</span>
         <span>🌐 {company.web}</span>
       </div>
-
-      {/* Circular Seal & Stamp */}
-      <img src={sealImg} alt="RetailFix Seal" className="inv-seal" crossOrigin="anonymous" loading="eager" />
-      <img src={stampImg} alt="RetailFix Stamp" className="inv-stamp" crossOrigin="anonymous" loading="eager" />
     </div>
   );
 }
